@@ -1,6 +1,8 @@
 # Decoding the Data Ecosystem Institute (DeCoDE Institute)
 
-![](resources/images/logo.jpg)
+<div align="center">
+  <img src="resources/images/logo.jpg" width="200" alt="logo">
+</div>
 
 Welcome to the Decoding the Data Ecosystem (DeCoDE) Institute, a comprehensive virtual institute and capstone project event on open science, reproducible research, knowledge exchange, and skill development through Common Fund Data Ecosystem (CFDE) web portals, tools, and resources. Grounded in FAIR (Findable, Accessible, Interoperable, Reusable) principles, the CFDE is a unified network for discovering, accessing, and analyzing diverse biomedical datasets to accelerate scientific discovery. 
 
