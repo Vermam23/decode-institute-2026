@@ -72,8 +72,8 @@ Packages on GitHub are often:
 
 ```{r}
 #install.packages("devtools") #This has already been installed
-options(timeout=1e5) # extend the timeout
-devtools::install_github("MoTrPAC/MotrpacRatTraining6moData")
+#options(timeout=1e5) # extend the timeout
+#devtools::install_github("MoTrPAC/MotrpacRatTraining6moData")
 ```
 
 For this course, we installed the MoTrPAC data package from GitHub, because it is a specialized research package that is not available on CRAN.
@@ -267,7 +267,7 @@ If we wanted to combine multiple values or objects into a vector rather than add
 
 ### Loading the PHENO object
 
-Now that we know what an object is, let's create one from the MOTRPAC PHENO data. First, we need to create a useful name for the object we want to make. We will call the object `rat_pheno` for this dataset. We then will use the assingment operator `<-` to assign the dataset to that name. We then need to specify which dataset from the MotrpacRatTraining6moData we want, in this case `PHENO` . If we want to print the data stored in the object as an output in the notebook we need to call the object name `rat_pheno` on the next line.
+Now that we know what an object is, let's create one from the MOTRPAC PHENO data. First, we need to create a useful name for the object we want to make. We will call the object `rat_pheno` for this dataset. We then will use the assignment operator `<-` to assign the dataset to that name. We then need to specify which dataset from the MotrpacRatTraining6moData we want, in this case `PHENO` . If we want to print the data stored in the object as an output in the notebook we need to call the object name `rat_pheno` on the next line.
 
 We can also use `View(rat_pheno)` or click the white space next to the object name in the "Environment" tab to get an interactive spreadsheet. Any action performed in View will not change the underlying dataset.
 
@@ -401,13 +401,13 @@ summarize(pheno_mutate, ave_weight=mean(weight))
 
 ### Group_by()
 
-If we are interested in seeing the mean age in females versus males, we need to tell R to recognize a grouping pattern in our data object. The `group_by` function is a way to group one or more variables. It doesn't change anything as far as the structure of the data, but it does pass this grouping to downstream functions. Let's explore the `group_by` function by applying it to the `pheno_mutate` object in the `sex` column in the code block below:
+If we are interested in seeing the mean weight in females versus males, we need to tell R to recognize a grouping pattern in our data object. The `group_by` function is a way to group one or more variables. It doesn't change anything as far as the structure of the data, but it does pass this grouping to downstream functions. Let's explore the `group_by` function by applying it to the `pheno_mutate` object in the `sex` column in the code block below:
 
 ```{r}
 group_by(pheno_mutate, sex)
 ```
 
-Interestingly, nothing changes with the data itself; we still have the same dimensions, 6,156 X 6. We do now see a new tab called "Groups", with sex having two factors in that group. Using the `groups` function, we can always check on any existing groupings in the object. Let's look at the `groups` when using the `group_by` function as well as the original `rat_pheno` object. Do you see any difference between these two groups?
+Interestingly, nothing changes with the data itself; we still have the same dimensions, 6,156 X 8. We do now see a new tab called "Groups", with sex having two factors in that group. Using the `groups` function, we can always check on any existing groupings in the object. Let's look at the `groups` when using the `group_by` function as well as the original `rat_pheno` object. Do you see any difference between these two groups?
 
 ```{r}
 groups(group_by(pheno_mutate,sex))
@@ -428,21 +428,20 @@ How would we extract just PLASMA tissue samples?
 
 *Hint: Go back to the original rat_pheno data set. Use the ?PHENO (or help tab) as a reminder of which column this information can be found.*
 
-```{r}
-plasma <- filter(rat_pheno, tissue == "PLASMA")
-plasma
+```{r, solution=TRUE}
+
 ```
 
-How would we find the average first visit VO2 max of the control rats?
+How do we calculate the average VO2 max at the first visit for just the control rats?
 
-```{r}
-pheno_mutate %>% filter(group=="control")  %>% summarise(mean_vo=mean(vo_max1))
+```{r, solution=TRUE}
+
 ```
 
-How would we find the average first visit VO2 max of the control rats for male versus female?
+How do we calculate the average VO2 max at the first visit for male and female control rats?
 
-```{r}
-pheno_mutate %>% filter(group=="control")  %>% group_by(sex) %>% summarise(mean_vo=mean(vo_max1))
+```{r, solution=TRUE}
+
 ```
 
 ## Visualizing the data
@@ -473,19 +472,19 @@ It is important to understand the difference between discrete and continuous var
 
 ### Bar plot
 
-Let's say we are interested in exploring the sex variable. The first thing to do is to look at how many patients identify with each category. Sex is a single discrete variable, so a bar plot is suitable. We will use the `ggplot` function, choosing the `pheno_mutate` object. The aesthetic (`aes`) we are mapping here is `sex` on the `x`-axis. The y-axis will automatically be the number of patients in each category. We will use `geom_bar` for a bar plot output.
+Let's say we are interested in exploring the sex variable. The first thing to do is to look at how many rats fall into each category. Sex is a single discrete variable, so a bar plot is suitable. We will use the `ggplot` function, choosing the `pheno_mutate` object. The aesthetic (`aes`) we are mapping here is `sex` on the `x`-axis. The y-axis will automatically be the number of patients in each category. We will use `geom_bar` for a bar plot output.
 
 ```{r}
 ggplot(pheno_mutate, aes(x=sex)) + geom_bar()
 ```
 
-That's odd we see over 6,000 animals but the study shows 147 animals. Each rat had multiple tissues extracted and omics techniques performed, and if we recall we saw the same pid or unique animal identifier (rat ID) show up multiple time. Let's go ahead and use the distinct function which is also part of the dyplr package to extract only a single phenotype row for each animal. In the code chunk below create a new object called `pheno_dist`, then use the `distinct` function on the `rat_pheno` object and the column we want to be distinct is `pid`. Don't forget to have the `.keep_all=TRUE` to keep all of the columns not just pid.
+That's odd we see over 6,000 animals but the study shows 147 animals. Each rat had multiple tissues extracted and omics techniques performed, and if we recall we saw the same pid or unique animal identifier (rat ID) show up multiple time. Let's go ahead and use the distinct function which is also part of the dyplr package to extract only a single phenotype row for each animal. In the code chunk below create a new object called `pheno_dist`, then use the `distinct` function on the `pheno_mutate` object and the column we want to be distinct is `pid`. Don't forget to have the `.keep_all=TRUE` to keep all of the columns not just pid.
 
 ```{r, solution=TRUE}
 
 ```
 
-Let's go ahead and run our bar plot again with this new object below:
+Let's go ahead and run our bar plot again with this new object (pheno_dist) below:
 
 ```{r, solution=TRUE}
 
@@ -493,7 +492,7 @@ Let's go ahead and run our bar plot again with this new object below:
 
 ### Histogram
 
-Now let's look at the overall distribution of the first VO2 max measure in the `pheno_mutate` dataset . We can use the `ggplot` function on the `pheno_dist` data object, plotting the `vo_max1` on the `x`-axis as a histogram. Let's do this in the code block below:
+Now let's look at the overall distribution of the first VO2 max measure. We can use the `ggplot` function on the `pheno_dist` data object, plotting the `vo_max1` on the `x`-axis as a `histogram`. Let's do this in the code block below:
 
 ```{r, solution=TRUE}
 
@@ -507,7 +506,7 @@ We see an information bubble with a suggestion to pick a better bin width. By de
 
 ### Density Plot
 
-A density plot can be a better way to represent the distribution of data because density plots are a smooth curve that represents the proportion of the data across the dataset rather than the binned frequency which is what is shown in a histogram. Since we are plotting the same data object, we can use the previous code chunk, swapping out the`geom_histogram` with `geom_density`. Paste and modify your code in the empty code block below:
+A density plot can be a better way to represent the distribution of data because density plots are a smooth curve that represents the proportion of the data across the dataset rather than the binned frequency which is what is shown in a histogram. Since we are plotting the same data object, we can use the previous code chunk, swapping out the `geom_histogram` with `geom_density`. Paste and modify your code in the empty code block below:
 
 ```{r, solution=TRUE}
 
@@ -515,7 +514,7 @@ A density plot can be a better way to represent the distribution of data because
 
 ### Boxplot
 
-We can also look at the distribution of several groups using a box plot. Let's create a `geom_boxplot` looking at the `sex` on the `x`-axis and `age` on the `y`-axis in the code block below:
+We can also look at the distribution of several groups using a box plot. Let's create a `geom_boxplot` looking at the `sex` on the `x`-axis and `vo_max1` on the `y`-axis in the code block below:
 
 ```{r, solution=TRUE}
 
@@ -532,9 +531,7 @@ Let's say we are interested in seeing if there is a general correlation between 
 We can also add `color`, `size`, and `shape` aesthetics to the graph using different variables. Where would we add `color=sex` in the code block below:
 
 ```{r}
-#Faded Example
 ggplot(pheno_dist, aes(x=vo_max1, y=vo_max2)) + geom_point() 
-
 ```
 
 Where would we add `shape=group` in the code block below:
@@ -557,7 +554,7 @@ ggplot(pheno_dist, aes(x=vo_max1, y=vo_max2)) + geom_point()
 
 ### Regression
 
-Let's say we are interested in the relationship between `vo_max1` and `vo_max2` we could specifically look at the regression. Again thanks to the layer based nature of ggplot we can start with our scatter plot, and then layer on another plot type, a regression line. Regression plots are made using `geom_smooth` with the specific `method` as a linear model (`method=lm`). Let's add this in the code block below:
+Let's say we are interested in the relationship between `vo_max1` and `vo_max2` we could specifically look at the regression. Again thanks to the layer based nature of ggplot we can start with our scatter plot, and then layer on another plot type, a regression line. Regression plots are made using `geom_smooth` with the specific `method` as a linear model (`method="lm"`). Let's add this in the code block below:
 
 ```{r}
 ggplot(pheno_dist, aes(x=vo_max1, y=vo_max2)) + geom_point() 
@@ -573,12 +570,18 @@ ggplot(pheno_dist, aes(x=vo_max1, y=vo_max2)) + geom_point()
 
 Rather than creating a single graph with the variables in differing colors, we can instead use the `facet_wrap` function to create separate graphs for each value in the `sex` variable. The `facet_wrap` function will automatically divide a plot into subplots based on the values of one or more discrete variables. Plots can be organized into variables by rows, columns, or wrapped into a rectangular layout. ![](images/faceting.png)
 
-Let's create a `geom_point` plot using the `pbc` data object with `age` in the `x`-axis and `platelet` in the `y`-axis. Add a `geom_smooth` line using the `lm` `method`. Now let's use the `facet_wrap` function to create subplots for each `sex` using the `vars` option make sure to specific that we want the plots to be side by side by using the `nrow` or `ncol` option in the empty code chunk below:
+Let's create a `geom_point` plot using the `pheno_dist` data object with `vo_max1` in the `x`-axis and `vo_max2` in the `y`-axis. Add a `geom_smooth` line using the `lm` `method`. Now let's use the `facet_wrap` function to create subplots for each `sex` using the `vars` option in the empty code chunk below:
 
 *Note: Remember you can always use the help tab to get ideas on the syntax of a function with examples of how to use it.*
 
 ```{r, solution=TRUE}
 
+```
+
+If we want to export this particular graph for a publication, we can use the `ggsave` function and give the file a name. If we use the file extension png in the file name it will write out the plot as a png. If we want to change the file format type, we can choose any one of these extensions: .eps, .ps, .tex, .pdf, .jpeg, .tiff, .png, .bmp, .svg or .wmf (on Windows only).
+
+```{r}
+ggsave("vo_max_reg.png")
 ```
 
 ## Pivoting Data
@@ -618,14 +621,8 @@ Now that we have pivoted and calculated the mean VO2 max in the first and last t
 The `group` variable is also mapped to `group` in ggplot which will ensure a separate line is drawn for each group across training sessions. We then add both the scatter plot and the connecting lines with `geom_point` and `geom_line`. We will generate a separate plot for males and females using `facet_wrap`. We may want to add our own labels for the graph using the `labs` function and tilt the axis labels as well using the `theme`.
 
 ```{r, solution=TRUE}
+#Note this is one I will walk through with the group
 
-
-```
-
-If we want to export this particular graph for a publication, we can use the `ggsave` function and give the file a name. If we use the file extension png in the file name it will write out the plot as a png. If we want to change the file format type, we can choose any one of these extensions: .eps, .ps, .tex, .pdf, .jpeg, .tiff, .png, .bmp, .svg or .wmf (on Windows only).
-
-```{r}
-ggsave("ave_group_vo_max.png")
 ```
 
 ## omics Data
@@ -756,7 +753,7 @@ The combined data object `pheno_exp` can also easily be used to plot any particu
 
 ```
 
-### Factor Re-leveling 
+### Factor Re-leveling
 
 The order of our groups doesn't quite make sense. It would be easier to read the graph if it were ordered from positive to negative rather than alphabetically. If we want to reorder factors, we will use the `fct_relevel` function found within the [forcats](https://forcats.tidyverse.org/) package. We will take the `pheno_exp` object and use `mutate` to overwrite the `group` variable with the `fct_relevel` function on the `group` variable. In this instance, we need to write the exact name and order of each factor by hand. We can check that our reorganization worked by checking the `levels`.
 
